@@ -9,9 +9,7 @@ This project was designed as a **learning and workflow experiment**, built to pr
 
 No slow generation, no waiting for diffusion, just type, generate, post.
 
-## To Do's
-
-Ui/Ux Fixes
+To Do - Ui/Ux Fixes
 
 ## Features
 
