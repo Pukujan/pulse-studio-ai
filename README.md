@@ -144,4 +144,3 @@ VITE_PEXELS_API_KEY=
 ## License
 
 MIT License , Pulse AI Studio
-```
