@@ -3,24 +3,18 @@
  * Handles image search and retrieval from Pexels
  */
 
-import { createClient } from 'pexels';
 import { verifyImageObjects, batchVerifyImages, extractObjects } from './visionFilter';
 
 const API_KEY = import.meta.env.VITE_PEXELS_API_KEY || '';
+const PEXELS_API_BASE = 'https://api.pexels.com/v1';
 
-let pexelsClient: ReturnType<typeof createClient> | null = null;
-
-// Initialize Pexels API
-const initializePexels = () => {
+// Check if API key is available
+const hasApiKey = () => {
   if (!API_KEY) {
     console.warn('Pexels API key not found. Please add VITE_PEXELS_API_KEY to your .env file');
-    return null;
+    return false;
   }
-
-  if (!pexelsClient) {
-    pexelsClient = createClient(API_KEY);
-  }
-  return pexelsClient;
+  return true;
 };
 
 export interface UnsplashImage {
@@ -103,33 +97,41 @@ export const searchImages = async (
   count: number = 10,
   options?: Partial<PexelsSearchOptions>
 ): Promise<UnsplashImage[]> => {
-  const client = initializePexels();
-
-  if (!client) {
-    console.error('❌ Pexels client not initialized! Check your API key.');
-    // Return fallback images if API is not available
+  if (!hasApiKey()) {
+    console.error('❌ Pexels API key not available');
     return getFallbackImages(count);
   }
 
   console.log(`🚀 Starting Pexels search for: "${query}" (requesting ${count} images)`);
 
   try {
-    // Build search params with intelligent defaults
-    const searchParams: any = {
+    // Build query params
+    const params = new URLSearchParams({
       query,
-      per_page: count,
+      per_page: String(count),
       orientation: options?.orientation || 'square',
-      ...(options?.size && { size: options.size }),
-      ...(options?.color && { color: options.color })
-    };
+    });
 
-    console.log('🔍 Pexels search params:', searchParams);
+    if (options?.size) params.append('size', options.size);
+    if (options?.color) params.append('color', options.color);
 
-    const result = await client.photos.search(searchParams);
+    console.log('🔍 Pexels search params:', Object.fromEntries(params));
+
+    const response = await fetch(`${PEXELS_API_BASE}/search?${params}`, {
+      headers: {
+        'Authorization': API_KEY
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Pexels API error: ${response.status}`);
+    }
+
+    const result = await response.json();
 
     console.log('📦 Raw Pexels API response:', result);
 
-    if ('photos' in result && result.photos) {
+    if (result.photos && Array.isArray(result.photos)) {
       const mappedPhotos = result.photos.map((photo: any) => ({
         id: String(photo.id),
         url: photo.src.large,
@@ -156,15 +158,6 @@ export const searchImages = async (
 
       return mappedPhotos;
     }
-
-    return getFallbackImages(count);
-  } catch (error) {
-    console.error('Error searching Pexels:', error);
-    return getFallbackImages(count);
-  }
-};
-
-/**
 /**
  * Search for images based on multiple keywords and return diverse results
  */
@@ -172,9 +165,7 @@ export const searchImagesByKeywords = async (
   keywords: string[],
   imagesPerKeyword: number = 1
 ): Promise<UnsplashImage[]> => {
-  const client = initializePexels();
-
-  if (!client || keywords.length === 0) {
+  if (!hasApiKey() || keywords.length === 0) {
     return getFallbackImages(keywords.length * imagesPerKeyword);
   }
 
@@ -197,7 +188,18 @@ export const searchImagesByKeywords = async (
     console.error('Error searching multiple keywords:', error);
     return getFallbackImages(keywords.length * imagesPerKeyword);
   }
+};    new Map(allImages.map(img => [img.id, img])).values()
+    );
+
+    return uniqueImages;
+  } catch (error) {
+    console.error('Error searching multiple keywords:', error);
+    return getFallbackImages(keywords.length * imagesPerKeyword);
+  }
 };
+/**
+ * Get random images from Pexels (using curated photos)
+ */
 /**
  * Get random images from Pexels (using curated photos)
  */
@@ -210,19 +212,25 @@ export const getRandomImages = async (
     return searchImages(query, count);
   }
 
-  const client = initializePexels();
-
-  if (!client) {
+  if (!hasApiKey()) {
     return getFallbackImages(count);
   }
 
   try {
-    const result = await client.photos.curated({
-      per_page: count,
-      page: Math.floor(Math.random() * 10) + 1 // Random page for variety
+    const page = Math.floor(Math.random() * 10) + 1;
+    const response = await fetch(`${PEXELS_API_BASE}/curated?per_page=${count}&page=${page}`, {
+      headers: {
+        'Authorization': API_KEY
+      }
     });
 
-    if ('photos' in result && result.photos) {
+    if (!response.ok) {
+      throw new Error(`Pexels API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.photos && Array.isArray(result.photos)) {
       return result.photos.map((photo: any) => ({
         id: String(photo.id),
         url: photo.src.large,
@@ -245,10 +253,7 @@ export const getRandomImages = async (
     console.error('Error getting random images:', error);
     return getFallbackImages(count);
   }
-};
-
-/**
- * Get concept images based on feel and topic with AI-optimized search
+}; Get concept images based on feel and topic with AI-optimized search
  */
 export const getConceptImages = async (
   feelOrQuery: string,
