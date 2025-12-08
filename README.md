@@ -17,6 +17,7 @@ To Do - Ui/Ux Fixes
 - Tailwind CSS
 - Gemini 2.5 Pro API
 - OpenRouter- Deepseek Chimera R2 API
+- Pexels API
 - Firebase
 
 ---
