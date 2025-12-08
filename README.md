@@ -11,6 +11,15 @@ No slow generation, no waiting for diffusion, just type, generate, post.
 
 To Do - Ui/Ux Fixes
 
+## Tech Stack
+
+Vite + React JS
+Gemini 2.5 Pro API
+OpenRouter- Deepseek Chimera R2 API
+Firebase
+
+---
+
 ## Features
 
 | Feature | Description |
