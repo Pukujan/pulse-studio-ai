@@ -13,10 +13,11 @@ To Do - Ui/Ux Fixes
 
 ## Tech Stack
 
-Vite + React JS
-Gemini 2.5 Pro API
-OpenRouter- Deepseek Chimera R2 API
-Firebase
+- Vite + React JS
+- Tailwind CSS
+- Gemini 2.5 Pro API
+- OpenRouter- Deepseek Chimera R2 API
+- Firebase
 
 ---
 
