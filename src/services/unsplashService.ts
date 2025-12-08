@@ -158,6 +158,14 @@ export const searchImages = async (
 
       return mappedPhotos;
     }
+
+    return getFallbackImages(count);
+  } catch (error) {
+    console.error('Error searching Pexels:', error);
+    return getFallbackImages(count);
+  }
+};
+
 /**
  * Search for images based on multiple keywords and return diverse results
  */
@@ -188,18 +196,7 @@ export const searchImagesByKeywords = async (
     console.error('Error searching multiple keywords:', error);
     return getFallbackImages(keywords.length * imagesPerKeyword);
   }
-};    new Map(allImages.map(img => [img.id, img])).values()
-    );
-
-    return uniqueImages;
-  } catch (error) {
-    console.error('Error searching multiple keywords:', error);
-    return getFallbackImages(keywords.length * imagesPerKeyword);
-  }
 };
-/**
- * Get random images from Pexels (using curated photos)
- */
 /**
  * Get random images from Pexels (using curated photos)
  */
@@ -253,7 +250,10 @@ export const getRandomImages = async (
     console.error('Error getting random images:', error);
     return getFallbackImages(count);
   }
-}; Get concept images based on feel and topic with AI-optimized search
+};
+
+/**
+ * Get concept images based on feel and topic with AI-optimized search
  */
 export const getConceptImages = async (
   feelOrQuery: string,
