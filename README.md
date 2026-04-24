@@ -1,5 +1,8 @@
 
 # Pulse AI Studio  (Product Demo Showcase)
+Note: AI API used in the demo currently locked due to token limitations, unlock requires env changes in backend.
+
+
 > Create ready-to-post social media graphics in seconds, not minutes.
 
 Pulse AI Studio is a speed-first media creation tool.  
