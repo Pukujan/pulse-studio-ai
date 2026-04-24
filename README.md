@@ -1,5 +1,5 @@
 
-# Pulse AI Studio  
+# Pulse AI Studio  (Product Demo Showcase)
 > Create ready-to-post social media graphics in seconds, not minutes.
 
 Pulse AI Studio is a speed-first media creation tool.  
